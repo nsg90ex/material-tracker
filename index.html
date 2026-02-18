@@ -26,11 +26,16 @@
                 <p>Track your part and material requests</p>
             </div>
 
-            <!-- Login / Sign up button powered by Netlify Identity -->
+            <!-- Manual login button that opens Netlify Identity -->
             <div class="login-actions">
-                <div data-netlify-identity-button class="btn-primary" style="text-align:center;">
-                    Login / Sign up
-                </div>
+                <button
+                  type="button"
+                  class="btn-primary"
+                  style="width:100%; text-align:center;"
+                  onclick="netlifyIdentity.open()"
+                >
+                  Login / Sign up
+                </button>
             </div>
         </div>
     </div>
