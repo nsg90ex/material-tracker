@@ -30,14 +30,11 @@ exports.handler = async (event, context) => {
   try {
     const { status } = JSON.parse(event.body || '{}');
 
-    // Build query string for Airtable list records API
     const params = new URLSearchParams();
-    // Sort by Date of request (field must exist in your table)
     params.append('sort[0][field]', 'Date of request');
     params.append('sort[0][direction]', 'desc');
 
     if (status) {
-      // Proper filterByFormula usage for Airtable API
       params.append('filterByFormula', `{Status} = '${status}'`);
     }
 
@@ -52,13 +49,29 @@ exports.handler = async (event, context) => {
       }
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error?.message || 'Failed to fetch from Airtable');
+    const rawText = await response.text();
+    let data = null;
+    try {
+      data = rawText ? JSON.parse(rawText) : null;
+    } catch {
+      // not JSON, leave as text
     }
 
-    const requests = data.records.map((record) => ({
+    if (!response.ok) {
+      console.error('Airtable error:', response.status, rawText);
+
+      return {
+        statusCode: response.status,
+        headers,
+        body: JSON.stringify({
+          error: (data && data.error && data.error.message) || rawText || 'Airtable error'
+        })
+      };
+    }
+
+    const records = data.records || [];
+
+    const requests = records.map((record) => ({
       id: record.id,
       partName: record.fields['Part name'] || '',
       size: record.fields['Size'] || '',
@@ -75,11 +88,11 @@ exports.handler = async (event, context) => {
       body: JSON.stringify(requests)
     };
   } catch (error) {
-    console.error('Error in get-requests:', error);
+    console.error('Error in get-requests outer:', error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: error.message })
+      body: JSON.stringify({ error: error.message || 'Unknown error' })
     };
   }
 };
