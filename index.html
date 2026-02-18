@@ -5,9 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#2563eb">
     <title>Material Tracker</title>
+
+    <!-- PWA manifest and icons -->
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/images/icon-192.png">
+
+    <!-- Styles -->
     <link rel="stylesheet" href="/style.css">
+
+    <!-- Netlify Identity widget -->
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
@@ -19,7 +25,13 @@
                 <h1>Material Tracker</h1>
                 <p>Track your part and material requests</p>
             </div>
-            <div id="netlify-identity-widget"></div>
+
+            <!-- Login / Sign up button powered by Netlify Identity -->
+            <div class="login-actions">
+                <div data-netlify-identity-button class="btn-primary" style="text-align:center;">
+                    Login / Sign up
+                </div>
+            </div>
         </div>
     </div>
 
@@ -152,6 +164,7 @@
         <span id="notification-text"></span>
     </div>
 
+    <!-- Main app script -->
     <script src="/app.js"></script>
 </body>
 </html>
