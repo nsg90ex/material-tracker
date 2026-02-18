@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2563eb">
+    <title>Material Tracker</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/images/icon-192.png">
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-section" class="screen">
+        <div class="login-card">
+            <div class="logo">
+                <div class="logo-icon">📦</div>
+                <h1>Material Tracker</h1>
+                <p>Track your part and material requests</p>
+            </div>
+            <div id="netlify-identity-widget"></div>
+        </div>
+    </div>
+
+    <!-- Main App Screen -->
+    <div id="app-section" class="screen hidden">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo-icon">📦</div>
+                <h1>Material Tracker</h1>
+            </div>
+            <div class="header-right">
+                <span id="user-email" class="user-info"></span>
+                <span id="user-role" class="role-badge"></span>
+                <button onclick="logout()" class="btn-secondary">Logout</button>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('requests')" data-tab="requests">
+                📋 All Requests
+            </button>
+            <button class="nav-tab" onclick="showTab('new-request')" data-tab="new-request">
+                ➕ New Request
+            </button>
+            <button class="nav-tab store-only hidden" onclick="showTab('manage')" data-tab="manage">
+                ⚙️ Manage Status
+            </button>
+        </nav>
+
+        <!-- All Requests Tab -->
+        <div id="requests-tab" class="tab-content active">
+            <div class="filter-bar">
+                <label>Filter by Status:</label>
+                <select id="status-filter" onchange="loadRequests()">
+                    <option value="">All Statuses</option>
+                    <option value="Requested">Requested</option>
+                    <option value="Ordered">Ordered</option>
+                    <option value="In stock">In stock</option>
+                </select>
+                <button onclick="loadRequests()" class="btn-refresh">🔄 Refresh</button>
+            </div>
+            <div id="requests-list" class="requests-list">
+                <div class="loading">Loading requests...</div>
+            </div>
+        </div>
+
+        <!-- New Request Tab -->
+        <div id="new-request-tab" class="tab-content hidden">
+            <div class="form-card">
+                <h2>Create New Material Request</h2>
+                <form id="request-form" onsubmit="submitRequest(event)">
+                    <div class="form-group">
+                        <label for="part-name">Part Name *</label>
+                        <input type="text" id="part-name" required placeholder="e.g., Bearing 6204-2RS">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="part-size">Size</label>
+                        <input type="text" id="part-size" placeholder="e.g., 20mm x 47mm x 14mm">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="part-description">Description</label>
+                        <textarea id="part-description" rows="3" placeholder="Additional details about the part..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="part-image">Image (Optional)</label>
+                        <input type="file" id="part-image" accept="image/*" onchange="previewImage(event)">
+                        <div id="image-preview" class="image-preview"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date of Request</label>
+                        <input type="date" id="request-date" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <input type="text" value="Requested" readonly class="static-field">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Submit Request</button>
+                        <button type="button" onclick="showTab('requests')" class="btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Manage Tab (Store Manager Only) -->
+        <div id="manage-tab" class="tab-content hidden">
+            <div class="info-card">
+                <h3>⚙️ Store Manager Panel</h3>
+                <p>Click on any request below to update its status.</p>
+            </div>
+            <div class="filter-bar">
+                <button onclick="loadRequests('manage')" class="btn-refresh">🔄 Refresh</button>
+            </div>
+            <div id="manage-list" class="requests-list">
+                <div class="loading">Loading requests...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="status-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Update Status</h3>
+            <p>Request: <strong id="modal-request-name"></strong></p>
+            <div class="form-group">
+                <label>Current Status:</label>
+                <select id="new-status">
+                    <option value="Requested">Requested</option>
+                    <option value="Ordered">Ordered</option>
+                    <option value="In stock">In stock</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button onclick="updateStatus()" class="btn-primary">Update Status</button>
+                <button onclick="closeModal()" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification hidden">
+        <span id="notification-text"></span>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>
